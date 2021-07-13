@@ -3,6 +3,7 @@
  */
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 
 /**
  * App Variables
@@ -20,6 +21,13 @@ const port = process.env.PORT || "8000";
 app.get("/", (req, res) => {
     res.status(200).send("Hi! My name is Ryo");
 });
+
+app.get('/listUsers', function(req, res) {
+    fs.readFile( __dirname + "/" + "users.json", 'utf8', function (err, data) {
+        console.log( data );
+        res.end( data );
+    });
+})
 
 /**
  * Server Activation
