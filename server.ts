@@ -95,11 +95,21 @@ createConnection(ormOptions)
 				password: req.body.password,
 				profession: req.body.profession,
 			};
-			console.log(user);
 
 			// get a user repository to perform operations with user
 			const userRepository = getManager().getRepository(User);
-
+			// load a user by email and password
+			const existtingUser = await userRepository.find({
+				where: {
+					'email': req.body.email,
+					'password': req.body.password
+				}
+			});
+			// return msg if user is existing
+			if (existtingUser && existtingUser.length > 0) {
+				res.send("Email is existing. Prease input another email!")
+				return;
+			}
 			const users = await userRepository.insert(user);
 
 			// return loaded users
