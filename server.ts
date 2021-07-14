@@ -4,6 +4,8 @@ import { Request, Response } from "express";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 // import { AppRoutes } from "./routes";
+import { getManager } from "typeorm";
+import { User } from "./entity/User";
 
 const ormOptions: any = {
 	type: "mysql",
@@ -31,6 +33,16 @@ createConnection(ormOptions)
 			res.status(200).send("Hi!. My name is Ryo");
 		});
 
+		app.get('/listUsers', async function (req, res) {
+			// get a user repository to perform operations with user
+			const userRepository = getManager().getRepository(User);
+
+			const users = await userRepository.find(); // wait for process until results are returned.
+
+			// return loaded users
+			res.send(users);
+		});
+		
 		// run app
 		app.listen(3000);
 
