@@ -35,6 +35,22 @@ createConnection(ormOptions)
 		function generateAccessToken(email) {
 			return jwt.sign(email, TOKEN_SECRET, { expiresIn: "1800s" });
 		}
+		function authenticateToken(req, res, next) {
+			const authHeader = req.headers["authorization"];
+			const token = authHeader && authHeader.split(" ")[1];
+
+			if (token == null) return res.sendStatus(401);
+
+			jwt.verify(token, TOKEN_SECRET as string, (err: any, user: any) => {
+				console.log(err);
+
+				if (err) return res.sendStatus(403);
+
+				req.user = user;
+
+				next();
+			});
+		}
 
 		// Routes Definitions
 		app.post("/login", async (req, res) => {
@@ -61,7 +77,7 @@ createConnection(ormOptions)
 			res.status(200).send("Hi!. My name is Ryo");
 		});
 
-		app.get("/listUsers", async function (req, res) {
+		app.get("/listUsers", authenticateToken, async function (req, res) {
 			// get a user repository to perform operations with user
 			const userRepository = getManager().getRepository(User);
 
