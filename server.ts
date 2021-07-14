@@ -42,7 +42,27 @@ createConnection(ormOptions)
 			// return loaded users
 			res.send(users);
 		});
+
+		app.post('/addUser', async function (req, res) {
+			// Prepare output in JSON format
+			const user = {
+				email: req.body.email,
+				name: req.body.name,
+				password: req.body.password,
+				profession: req.body.profession
+			};
+			console.log(user);
+
+			// get a user repository to perform operations with user
+			const userRepository = getManager().getRepository(User);
+
+			const users = await userRepository.insert(user);
+
+			// return loaded users
+			res.send(users);
+		});
 		
+
 		// run app
 		app.listen(3000);
 
