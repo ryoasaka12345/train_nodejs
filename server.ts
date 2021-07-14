@@ -102,13 +102,13 @@ createConnection(ormOptions)
 			// load a user by email and password
 			const existingUser = await userRepository.find({
 				where: {
-					'email': req.body.email,
-					'password': req.body.password
-				}
+					email: req.body.email,
+					password: req.body.password,
+				},
 			});
 			// return msg if user is existing
 			if (existingUser && existingUser.length > 0) {
-				res.send("Email is existing. Prease input another email!")
+				res.send("Email is existing. Prease input another email!");
 				return;
 			}
 			const users = await userRepository.insert(user);
@@ -143,9 +143,9 @@ createConnection(ormOptions)
 
 			const existingUser = await userRepository.find({
 				where: {
-					'id': req.params.id
-				}
-			})
+					id: req.params.id,
+				},
+			});
 			console.log("exisstingUser:", existingUser);
 			if (existingUser && existingUser.length == 0) {
 				res.send("User is not existing");
@@ -155,6 +155,31 @@ createConnection(ormOptions)
 			userRepository.delete(req.params.id);
 			res.end();
 			return;
+		});
+
+		// update user data
+		app.put("/:id", async function (req, res) {
+			const userRepository = getManager().getRepository(User);
+
+			const existingUser = await userRepository.find({
+				where: {
+					id: req.params.id,
+				},
+			});
+			if (existingUser && existingUser.length == 0) {
+				res.send("User is not existing");
+				return;
+			}
+
+			const user = {
+				email: req.body.email,
+				name: req.body.name,
+				password: req.body.password,
+				profession: req.body.profession,
+			};
+
+			const updatedUser = await userRepository.update(req.params.id, user);
+			res.send(updatedUser);
 		});
 
 		// run app
