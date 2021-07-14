@@ -8,6 +8,7 @@ import { getManager } from "typeorm";
 import { User } from "./entity/User";
 import * as jwt from "jsonwebtoken";
 import { JsonWebTokenError } from "jsonwebtoken";
+import { isDataView } from "util/types";
 
 const ormOptions: any = {
 	type: "mysql",
@@ -99,14 +100,14 @@ createConnection(ormOptions)
 			// get a user repository to perform operations with user
 			const userRepository = getManager().getRepository(User);
 			// load a user by email and password
-			const existtingUser = await userRepository.find({
+			const existingUser = await userRepository.find({
 				where: {
 					'email': req.body.email,
 					'password': req.body.password
 				}
 			});
 			// return msg if user is existing
-			if (existtingUser && existtingUser.length > 0) {
+			if (existingUser && existingUser.length > 0) {
 				res.send("Email is existing. Prease input another email!")
 				return;
 			}
@@ -139,6 +140,17 @@ createConnection(ormOptions)
 			// First read existing users.
 			// get a user repository to perform operations with user
 			const userRepository = getManager().getRepository(User);
+
+			const existingUser = await userRepository.find({
+				where: {
+					'id': req.params.id
+				}
+			})
+			console.log("exisstingUser:", existingUser);
+			if (existingUser && existingUser.length == 0) {
+				res.send("User is not existing");
+				return;
+			}
 
 			userRepository.delete(req.params.id);
 			res.end();
