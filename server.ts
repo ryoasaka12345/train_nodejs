@@ -10,6 +10,7 @@ import * as jwt from "jsonwebtoken";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { isDataView } from "util/types";
 import { URLSearchParams } from "url";
+import { PassThrough } from "stream";
 
 const ormOptions: any = {
 	type: "mysql",
@@ -196,19 +197,9 @@ createConnection(ormOptions)
 				res.send("User is not existing");
 				return;
 			}
-			console.log(req.body);
-			console.log(existingUser);
-
-			const updateData = req.body;
-			
-			await userRepository.update(
-				req.params.id,
-				updateData
-			);
-			
-			const result = Object.assign(
-				{id: req.params.id},
-				updateData
+			console.log(Object.assign({ id: Number(req.params.id) }, req.body));
+			const result = await userRepository.save(
+				Object.assign({ id: Number(req.params.id) }, req.body)
 			);
 			res.send(result);
 		});
