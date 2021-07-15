@@ -200,12 +200,17 @@ createConnection(ormOptions)
 			console.log(existingUser);
 
 			const updateData = req.body;
-
-			const updatedUser = await userRepository.update(
+			
+			await userRepository.update(
 				req.params.id,
 				updateData
 			);
-			res.send(updatedUser);
+			
+			const result = Object.assign(
+				{id: req.params.id},
+				updateData
+			);
+			res.send(result);
 		});
 
 		// run app
