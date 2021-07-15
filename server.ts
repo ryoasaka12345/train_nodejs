@@ -9,6 +9,7 @@ import { User } from "./entity/User";
 import * as jwt from "jsonwebtoken";
 import { JsonWebTokenError } from "jsonwebtoken";
 import { isDataView } from "util/types";
+import { URLSearchParams } from "url";
 
 const ormOptions: any = {
 	type: "mysql",
@@ -179,6 +180,31 @@ createConnection(ormOptions)
 			};
 
 			const updatedUser = await userRepository.update(req.params.id, user);
+			res.send(updatedUser);
+		});
+
+		// partial update user data
+		app.patch("/:id", async function (req, res) {
+			const userRepository = getManager().getRepository(User);
+
+			const existingUser = await userRepository.find({
+				where: {
+					id: req.params.id,
+				},
+			});
+			if (existingUser && existingUser.length == 0) {
+				res.send("User is not existing");
+				return;
+			}
+			console.log(req.body);
+			console.log(existingUser);
+
+			const updateData = req.body;
+
+			const updatedUser = await userRepository.update(
+				req.params.id,
+				updateData
+			);
 			res.send(updatedUser);
 		});
 
