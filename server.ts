@@ -113,7 +113,7 @@ createConnection(ormOptions)
 				res.send("Email is existing. Prease input another email!");
 				return;
 			}
-			const users = await userRepository.insert(user);
+			const users = await userRepository.save(user);
 
 			// return loaded users
 			res.send(users);
